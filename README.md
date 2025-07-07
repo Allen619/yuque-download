@@ -13,6 +13,7 @@
 - 🚀 **自动化登录**：支持 Cookie 自动登录，避免重复输入账号密码
 - 📚 **批量下载**：一键下载所有有权限访问的知识库文档
 - 📄 **Markdown 导出**：将文档导出为标准 Markdown 格式，保持原文档结构
+- 🖼️ **图片处理**：自动下载文档中的图片到本地，并更新图片链接为相对路径
 - 🔄 **失败重试**：内置重试机制，提高下载成功率
 - 📊 **统计报告**：提供详细的下载统计信息和失败记录
 - 🌐 **无头浏览器**：基于 Playwright，稳定性高，反检测能力强
@@ -63,6 +64,58 @@ document.cookie.split(';').map((cookie) => {
 npm start
 ```
 
+## 图片处理功能
+
+本工具还提供独立的图片处理功能，可以批量下载 Markdown 文件中的图片并更新链接。
+
+### 使用方法
+
+```bash
+node export-image.js
+```
+
+### 环境变量配置
+
+在 `.env` 文件中可以配置以下选项：
+
+```env
+# Markdown 文件目录（默认：./output）
+MARKDOWN_DIR=./output
+
+# 是否下载图片（默认：true）
+DOWNLOAD_IMAGE=true
+
+# 是否更新图片链接为本地路径（默认：false）
+UPDATE_MDIMG_URL=true
+
+# 替换图片链接的主机地址（可选）
+REPLACE_IMAGE_HOST=
+```
+
+### 功能特性
+
+- **本地存储**：图片下载到每个 Markdown 文件同目录的 `images` 文件夹中
+- **相对路径**：自动将图片链接更新为 `./images/图片名` 格式
+- **失败记录**：下载失败的图片链接会记录在 `logs/images-failed.txt` 文件中
+- **批量处理**：递归处理指定目录下的所有 Markdown 文件
+
+### 文件结构示例
+
+```
+output/
+├── 知识库A/
+│   ├── 文档1.md          # 引用 ./images/image1.png
+│   ├── images/
+│   │   ├── image1.png
+│   │   └── image2.jpg
+│   └── 子目录/
+│       ├── 文档2.md      # 引用 ./images/image3.png
+│       └── images/
+│           └── image3.png
+└── logs/
+    └── images-failed.txt  # 失败记录
+```
+
 ## 功能特性
 
 ### 智能重试机制
@@ -100,15 +153,23 @@ npm start
 - 文件写入错误
 - 浏览器崩溃等
 
-所有失败的下载记录会保存在 `output/fail.json` 文件中，可根据记录进行手动重试。
+### 失败记录
+
+- **文档下载失败**：记录在 `output/logs/fail.json` 文件中
+- **图片下载失败**：记录在 `logs/images-failed.txt` 文件中
+
+可根据失败记录进行手动重试或问题排查。
 
 ## 开发说明
 
 ### 环境设置
 
 ```bash
-# 开发模式运行
+# 文档下载
 npm start
+
+# 图片处理
+npm run export-images
 
 # 调试模式（显示浏览器界面）
 # 修改 main.js 中的 headless: false

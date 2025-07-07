@@ -28,7 +28,7 @@ export async function exportMarkDownFiles(page, books) {
 
   // 保存失败记录
   if (failedDownloads.length > 0) {
-    const failPath = path.join(folderPath, 'fail.json');
+    const failPath = path.join(folderPath, 'logs/fail.json');
     fs.writeFileSync(
       failPath,
       JSON.stringify(failedDownloads, null, 2),
