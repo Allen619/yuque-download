@@ -30,22 +30,12 @@
 npm install
 ```
 
-### 3. 配置环境变量（可选）
-
-创建 `.env` 文件设置导出路径：
-
-```env
-EXPORT_PATH=./output
-```
-
-如不设置，默认导出到 `./output` 目录。
-
-### 4. 登录配置
+### 3. 登录配置
 
 首次运行需要手动登录语雀并保存 Cookie：
 
 1. 打开浏览器，登录[语雀](https://www.yuque.com/dashboard)
-2. 打开开发者工具，控制台输入获取 cookie 的代码
+2. 打开开发者工具（F12），在控制台输入获取 cookie 的代码：
 
 ```javascript
 document.cookie.split(';').map((cookie) => {
@@ -54,15 +44,83 @@ document.cookie.split(';').map((cookie) => {
 });
 ```
 
-3. 保存文件至 `cookies.json` 文件
+3. 将代码输出结果保存到 `cookies.json` 文件
+4. **重要**：手动检查 `cookies.json` 中是否包含 **`_yuque_session`**，如果没有请在开发者工具的 **Application** → **Storage** → **Cookies** → `https://www.yuque.com` 中手动复制添加
 
-### 5. 开始下载
+> ⚠️ **重要提醒**：`_yuque_session` 是最关键的 Cookie！没有这个 Cookie，程序无法正常登录和下载文档。
 
-配置完成后，再次运行即可开始批量下载：
+### 4. 开始下载
+
+本工具提供两种运行模式，请根据需要选择：
+
+#### 🎯 交互式模式（推荐，适合所有用户）
+
+运行交互式配置，通过简单问答设置所有选项：
+
+```bash
+npm run interactive
+```
+
+交互式模式会引导您：
+
+- 设置文档导出路径
+- 选择是否下载图片
+- 配置图片链接更新选项
+- 设置图片链接替换规则
+
+程序会根据您的选择自动执行相应任务。
+
+#### 🔧 开发者模式（适合开发者）
+
+使用环境变量配置，适合脚本化和自动化场景：
+
+**仅导出文档（不下载图片）：**
 
 ```bash
 npm start
 ```
+
+**导出文档并处理图片：**
+
+```bash
+# 先导出文档
+npm start
+# 再下载图片
+npm run export-images
+```
+
+> 💡 **使用建议**：新手用户推荐使用交互式模式，开发者可以根据需要选择任一模式。
+
+
+
+## 环境变量配置
+
+创建 `.env` 文件可以自定义各种配置选项。所有配置项都是可选的，不设置则使用默认值。
+
+```env
+# 文档导出路径（默认：./output）
+EXPORT_PATH=./output
+
+# 图片处理功能读取 Markdown 文件读取目录（默认：./output）
+MARKDOWN_DIR=./output
+
+# 是否下载图片（默认：true）
+DOWNLOAD_IMAGE=true
+
+# 是否更新图片链接为本地路径（默认：false）
+UPDATE_MDIMG_URL=true
+
+# 替换图片链接的主机地址（可选，用于批量替换特定域名的图片链接）
+REPLACE_IMAGE_HOST=
+```
+
+### 配置说明
+
+- **EXPORT_PATH**：设置语雀文档下载的输出目录，主程序将文档导出到此路径
+- **MARKDOWN_DIR**：图片处理功能读取 Markdown 文件的目录。此配置**仅用于图片处理功能**（`export-image.js`），指定要扫描和处理的 Markdown 文件所在的根目录。通常设置为与 EXPORT_PATH 相同的目录，但如果您需要处理其他位置的 Markdown 文件，可以单独指定
+- **DOWNLOAD_IMAGE**：控制是否下载 Markdown 中的图片到本地
+- **UPDATE_MDIMG_URL**：是否将图片链接更新为本地相对路径
+- **REPLACE_IMAGE_HOST**：替换特定主机的图片链接，用于迁移图片存储位置
 
 ## 图片处理功能
 
@@ -72,24 +130,8 @@ npm start
 
 ```bash
 node export-image.js
-```
-
-### 环境变量配置
-
-在 `.env` 文件中可以配置以下选项：
-
-```env
-# Markdown 文件目录（默认：./output）
-MARKDOWN_DIR=./output
-
-# 是否下载图片（默认：true）
-DOWNLOAD_IMAGE=true
-
-# 是否更新图片链接为本地路径（默认：false）
-UPDATE_MDIMG_URL=true
-
-# 替换图片链接的主机地址（可选）
-REPLACE_IMAGE_HOST=
+# 或者
+npm run export-images
 ```
 
 ### 功能特性
@@ -162,9 +204,12 @@ output/
 
 ## 开发说明
 
-### 环境设置
+### 可用命令
 
 ```bash
+# 交互式配置模式（推荐）
+npm run interactive
+
 # 文档下载
 npm start
 
@@ -174,6 +219,10 @@ npm run export-images
 # 调试模式（显示浏览器界面）
 # 修改 main.js 中的 headless: false
 ```
+
+### 环境设置
+
+详细的使用方法和配置选项请参考 [USAGE.md](./USAGE.md) 文件。
 
 ## 许可证
 

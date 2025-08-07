@@ -7,6 +7,7 @@
 /.pnp
 .pnp.js
 .cursor
+.vscode
 
 # testing
 /coverage
@@ -15,6 +16,7 @@ test/*
 
 # production
 /build
+dist
 
 # misc
 .DS_Store

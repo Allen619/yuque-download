@@ -28,15 +28,25 @@ async function run() {
   let browser;
 
   try {
+    // 处理导出路径，确保目录存在
+    let exportPath;
     if (!process.env.EXPORT_PATH) {
-      const outputDir = path.join(process.cwd(), 'output');
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir);
-      }
-      process.env.EXPORT_PATH = outputDir;
+      exportPath = path.join(process.cwd(), 'output');
+      process.env.EXPORT_PATH = exportPath;
       console.log(
-        `The environment variable EXPORT_PATH is not set, so the default ${outputDir} is used as the export path.`
+        `环境变量 EXPORT_PATH 未设置，使用默认路径 ${exportPath} 作为导出目录。`
       );
+    } else {
+      exportPath = process.env.EXPORT_PATH;
+    }
+
+    // 确保导出目录存在，如果不存在则创建
+    if (!fs.existsSync(exportPath)) {
+      try {
+        fs.mkdirSync(exportPath, { recursive: true });
+      } catch (error) {
+        throw new Error(`无法创建导出目录 ${exportPath}：${error.message}`);
+      }
     }
 
     // 使用 Playwright 替换 Puppeteer
